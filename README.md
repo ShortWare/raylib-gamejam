@@ -2,7 +2,7 @@
 
 # [The Hex Loom]
 
-**[Releases](https://github.com/ShortWare/raylib-gamejam/releases)**
+**[Releases](https://github.com/ShortWare/the-hex-loom/releases)**
 
 [![License: Beerware](https://img.shields.io/badge/license-Beerware-yellow.svg)](https://github.com/Pdrewicz/RimForge)
 
