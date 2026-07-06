@@ -22,7 +22,9 @@ FetchContent_MakeAvailable(raylib)
 add_executable(${PROJECT_NAME}
         src/levels/shop.h
         src/levels/book.h
-        src/enums.h)
+        src/enums.h
+        src/tools/mouseHelper.h
+)
 add_subdirectory(src)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

@@ -4,12 +4,13 @@
 #pragma once
 #include "raylib.h"
 #include "../enums.h"
+#include "../tools/mouseHelper.h"
 
 class Shop {
 
 
 public:
-    void render(RenderTexture2D target, int frameCounter, float screenWidth, float screenHeight, GameScreen* gameScreen, bool clickedLeft) {
+    void render(RenderTexture2D target, int frameCounter, float screenWidth, float screenHeight, GameScreen* gameScreen, MouseHelper mouseHelper) {
         BeginTextureMode(target);
         ClearBackground(RAYWHITE);
 
@@ -27,7 +28,7 @@ public:
 
         EndDrawing();
 
-        if (clickedLeft) {
+        if (mouseHelper.isButtonClicked(0)) {
             *gameScreen = GameScreen::SCREEN_BOOK;
         }
     }

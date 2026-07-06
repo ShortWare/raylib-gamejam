@@ -13,6 +13,7 @@
 #include "levels/shop.h"
 #include "levels/book.h"
 #include "enums.h"
+#include "tools/mouseHelper.h"
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>      // Emscripten library
@@ -55,6 +56,8 @@ static GameScreen gameScreen = GameScreen::SCREEN_SHOP;
 
 Book book = Book();
 Shop shop = Shop();
+
+MouseHelper mouseHelper = MouseHelper();
 
 // TODO: Define global variables here, recommended to make them static
 
@@ -121,19 +124,14 @@ void UpdateDrawFrame(void)
    
     frameCounter++;
 
-    if (IsMouseButtonDown(0)) {
-        wasMouseLeftDown = true;
-    } else {
-        clickedLeft = wasMouseLeftDown;
-        wasMouseLeftDown = false;
-    }
+    mouseHelper.update();
 
     switch (gameScreen) {
         case GameScreen::SCREEN_BOOK:
-            book.render(target, frameCounter, screenWidth, screenHeight, &gameScreen, clickedLeft);
+            book.render(target, frameCounter, screenWidth, screenHeight, &gameScreen, mouseHelper);
             break;
         case GameScreen::SCREEN_SHOP:
-            shop.render(target, frameCounter, screenWidth, screenHeight, &gameScreen, clickedLeft);
+            shop.render(target, frameCounter, screenWidth, screenHeight, &gameScreen, mouseHelper);
             break;
     }
 }
