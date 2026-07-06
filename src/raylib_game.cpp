@@ -10,6 +10,9 @@
 ********************************************************************************************/
 
 #include "raylib.h"
+#include "levels/shop.h"
+#include "levels/book.h"
+#include "enums.h"
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>      // Emscripten library
@@ -34,12 +37,6 @@
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum { 
-    SCREEN_LOGO = 0, 
-    SCREEN_TITLE, 
-    SCREEN_GAMEPLAY, 
-    SCREEN_ENDING
-} GameScreen;
 
 // TODO: Define your custom data types here
 
@@ -51,6 +48,13 @@ static const int screenHeight = 720;
 
 static RenderTexture2D target = { 0 };  // Render texture to render our game
 static int frameCounter = 0;
+
+static bool wasMouseLeftDown = false;
+
+static GameScreen gameScreen = GameScreen::SCREEN_SHOP;
+
+Book book = Book();
+Shop shop = Shop();
 
 // TODO: Define global variables here, recommended to make them static
 
@@ -110,45 +114,26 @@ int main(void)
 // Update and draw frame
 void UpdateDrawFrame(void)
 {
+    bool clickedLeft = false;
     // Update
     //----------------------------------------------------------------------------------
     // TODO: Update variables / Implement example logic at this point
    
     frameCounter++;
-    //----------------------------------------------------------------------------------
 
-    // Draw
-    //----------------------------------------------------------------------------------
-    // Render game screen to a texture, 
-    // it could be useful for scaling or further shader postprocessing
-    BeginTextureMode(target);
-        ClearBackground(RAYWHITE);
-        
-        // TODO: Draw your game screen here
+    if (IsMouseButtonDown(0)) {
+        wasMouseLeftDown = true;
+    } else {
+        clickedLeft = wasMouseLeftDown;
+        wasMouseLeftDown = false;
+    }
 
-        DrawRectangle(70, 90, 200, 200, BLACK);
-        DrawRectangle(70 + 16, 90 + 16, 200 - 32, 200 - 32, RAYWHITE);
-        DrawText("raylib", 70 + 200 - MeasureText("raylib", 40) - 32, 90 + 200 - 40 - 24, 40, BLACK);
-
-        DrawText("6.x", 290, 90 - 26, 280, BLACK);
-        DrawText("GAMEJAM", 70, 90 + 210, 120, MAROON);
-
-        if ((frameCounter/20)%2) DrawText("are you ready?", 160, 500, 50, BLACK);
-        
-        DrawRectangleLinesEx((Rectangle){ 0, 0, screenWidth, screenHeight }, 16, BLACK);
-        
-    EndTextureMode();
-    
-    // Render to screen (main framebuffer)
-    BeginDrawing();
-        ClearBackground(RAYWHITE);
-        
-        // Draw render texture to screen, scaled if required
-        DrawTexturePro(target.texture, (Rectangle){ 0, 0, (float)target.texture.width, -(float)target.texture.height }, 
-            (Rectangle){ 0, 0, (float)target.texture.width, (float)target.texture.height }, (Vector2){ 0, 0 }, 0.0f, WHITE);
-
-        // TODO: Draw everything that requires to be drawn at this point, maybe UI?
-
-    EndDrawing();
-    //----------------------------------------------------------------------------------  
+    switch (gameScreen) {
+        case GameScreen::SCREEN_BOOK:
+            book.render(target, frameCounter, screenWidth, screenHeight, &gameScreen, clickedLeft);
+            break;
+        case GameScreen::SCREEN_SHOP:
+            shop.render(target, frameCounter, screenWidth, screenHeight, &gameScreen, clickedLeft);
+            break;
+    }
 }
