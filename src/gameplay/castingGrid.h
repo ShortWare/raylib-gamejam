@@ -12,6 +12,8 @@
 class CastingGrid {
     Color lineColor = SKYBLUE;
     Color lineColorError = RED;
+    Color lineColorGuard = GRAY;
+    Color lineColorGuardSecondary = LIGHTGRAY;
     float lineLength = 40.0f;
     Vector2 targetPos{};
     bool previewValid = false;
@@ -173,7 +175,75 @@ public:
             for (size_t i = 0; i < points.size() - 1; i++) {
                 DrawLineV(points[i], points[i + 1], lineColor);
             }
-            if (!finished) {
+
+            if (!finished && points.size() >= 2) {
+                const Vector2& last = points.back();
+                const Vector2& prev = points[points.size() - 2];
+                Vector2 dir = { last.x - prev.x, last.y - prev.y };
+                float len = sqrtf(dir.x * dir.x + dir.y * dir.y);
+                if (len > 0.0f) {
+                    dir.x /= len; dir.y /= len;
+                    const float cos60 = 0.5f;
+                    const float sin60 = 0.8660254037844386f;
+
+                    Vector2 leftDir = {
+                        dir.x * cos60 - dir.y * sin60,
+                        dir.x * sin60 + dir.y * cos60
+                    };
+                    Vector2 rightDir = {
+                        dir.x * cos60 + dir.y * sin60,
+                       -dir.x * sin60 + dir.y * cos60
+                    };
+
+                    Vector2 leftEnd  = { last.x + leftDir.x  * lineLength,
+                                         last.y + leftDir.y  * lineLength };
+                    Vector2 rightEnd = { last.x + rightDir.x * lineLength,
+                                         last.y + rightDir.y * lineLength };
+
+                    if (!edgeExists(last, leftEnd))
+                        DrawLineV(last, leftEnd, lineColorGuard);
+                    if (!edgeExists(last, rightEnd))
+                        DrawLineV(last, rightEnd, lineColorGuard);
+
+                    if (!edgeExists(last, leftEnd)) {
+                        Vector2 leftSecondaryLeft = {
+                            leftDir.x * cos60 - leftDir.y * sin60,
+                            leftDir.x * sin60 + leftDir.y * cos60
+                        };
+                        Vector2 leftSecondaryRight = {
+                            leftDir.x * cos60 + leftDir.y * sin60,
+                           -leftDir.x * sin60 + leftDir.y * cos60
+                        };
+                        Vector2 leftSecLeftEnd  = { leftEnd.x + leftSecondaryLeft.x  * lineLength,
+                                                    leftEnd.y + leftSecondaryLeft.y  * lineLength };
+                        Vector2 leftSecRightEnd = { leftEnd.x + leftSecondaryRight.x * lineLength,
+                                                    leftEnd.y + leftSecondaryRight.y * lineLength };
+                        if (!edgeExists(leftEnd, leftSecLeftEnd))
+                            DrawLineV(leftEnd, leftSecLeftEnd, lineColorGuardSecondary);
+                        if (!edgeExists(leftEnd, leftSecRightEnd))
+                            DrawLineV(leftEnd, leftSecRightEnd, lineColorGuardSecondary);
+                    }
+
+                    if (!edgeExists(last, rightEnd)) {
+                        Vector2 rightSecondaryLeft = {
+                            rightDir.x * cos60 - rightDir.y * sin60,
+                            rightDir.x * sin60 + rightDir.y * cos60
+                        };
+                        Vector2 rightSecondaryRight = {
+                            rightDir.x * cos60 + rightDir.y * sin60,
+                           -rightDir.x * sin60 + rightDir.y * cos60
+                        };
+                        Vector2 rightSecLeftEnd  = { rightEnd.x + rightSecondaryLeft.x  * lineLength,
+                                                     rightEnd.y + rightSecondaryLeft.y  * lineLength };
+                        Vector2 rightSecRightEnd = { rightEnd.x + rightSecondaryRight.x * lineLength,
+                                                     rightEnd.y + rightSecondaryRight.y * lineLength };
+                        if (!edgeExists(rightEnd, rightSecLeftEnd))
+                            DrawLineV(rightEnd, rightSecLeftEnd, lineColorGuardSecondary);
+                        if (!edgeExists(rightEnd, rightSecRightEnd))
+                            DrawLineV(rightEnd, rightSecRightEnd, lineColorGuardSecondary);
+                    }
+                }
+
                 Color c = previewValid ? lineColor : lineColorError;
                 DrawLineV(points.back(), targetPos, c);
             }
