@@ -45,11 +45,30 @@ public:
         }
     }
 
+    static void Play(SoundType type, float volume) {
+        if (type >= 0 && type < COUNT) {
+            SetSoundVolume(sounds_[type], volume);
+            PlaySound(sounds_[type]);
+        }
+    }
+
     static bool IsPlaying(SoundType type) {
         if (type >= 0 && type < COUNT) {
             return IsSoundPlaying(sounds_[type]);
         }
         return false;
+    }
+
+    static void SetVolume(float volume) {
+        SetMasterVolume(volume);
+    }
+
+    static float GetVolume() {
+        GetMasterVolume();
+    }
+
+    static float PlaySample() {
+        Play(MOVE);
     }
 
     static void Shutdown() {
