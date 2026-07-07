@@ -29,6 +29,10 @@ add_executable(${PROJECT_NAME}
         src/gameplay/spells.h
         src/tools/soundManager.h
         src/tools/soundManager.cpp
+        src/tools/roomSwitcher.h
+        src/tools/textureManager.h
+        src/tools/TextureManager.cpp
+        src/tools/roomSwitcher.cpp
 )
 add_subdirectory(src)
 

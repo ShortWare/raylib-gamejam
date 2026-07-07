@@ -6,6 +6,7 @@
 #include "../enums.h"
 #include "../tools/inputHelper.h"
 #include "../tools/soundManager.h"
+#include "../tools/roomSwitcher.h"
 
 class Shop {
 
@@ -17,15 +18,7 @@ public:
 
         DrawText("Shop", 160, 90, 120, MAROON);
 
-        int pos = GetMousePosition().x;
-
-        if (pos >= screenWidth - 20) {
-            DrawRectangle(screenWidth - 20, 0, 20, screenHeight, SKYBLUE);
-
-            if (inputHelper.isButtonClicked(0)) {
-                *gameScreen = GameScreen::SCREEN_WORKSHOP;
-            }
-        }
+        int mousePos = GetMousePosition().x;
 
         EndTextureMode();
 
@@ -40,8 +33,27 @@ public:
 
 
         if (inputHelper.isKeyClicked(KEY_D)) {
-            *gameScreen = GameScreen::SCREEN_WORKSHOP;
+            RoomSwitcher::switchRoom(GameScreen::SCREEN_WORKSHOP, true);
             SoundManager::Play(SoundManager::MOVE);
         }
+
+
+        if (RoomSwitcher::isActive()) {
+            RoomSwitcher::render(gameScreen);
+            return;
+        }
+
+
+
+        BeginDrawing();
+        if (mousePos >= screenWidth - 20) {
+            DrawRectangle(screenWidth - 20, 0, 20, screenHeight, SKYBLUE);
+
+            if (inputHelper.isButtonClicked(0)) {
+                RoomSwitcher::switchRoom(GameScreen::SCREEN_WORKSHOP, true);
+                SoundManager::Play(SoundManager::MOVE);
+            }
+        }
+        EndDrawing();
     }
 };

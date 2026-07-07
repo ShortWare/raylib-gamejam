@@ -21,6 +21,7 @@
 
 #if defined(PLATFORM_WEB)
 #include "tools/soundManager.h"
+#include "tools/textureManager.h"
 #include <emscripten/emscripten.h> // Emscripten library
 #endif
 
@@ -97,6 +98,7 @@ int main(void) {
   SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
 
   SoundManager::Initialize();
+  TextureManager::Initialize();
   main_menu.setup(gamestate, inputHelper);
   settings_menu.setup(gamestate, inputHelper);
 
@@ -118,6 +120,7 @@ int main(void) {
   UnloadRenderTexture(target);
 
   SoundManager::Shutdown();
+  TextureManager::Shutdown();
 
   // TODO: Unload all loaded resources at this point
 

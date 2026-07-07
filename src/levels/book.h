@@ -6,6 +6,7 @@
 #include "../enums.h"
 #include "../tools/inputHelper.h"
 #include "../tools/soundManager.h"
+#include "../tools/roomSwitcher.h"
 
 class Book {
 
@@ -17,15 +18,7 @@ public:
 
         DrawText("Book", 160, 90, 120, MAROON);
 
-        int pos = GetMousePosition().x;
-
-        if (pos < 20) {
-            DrawRectangle(0, 0, 20, screenHeight, SKYBLUE);
-
-            if (inputHelper.isButtonClicked(0)) {
-                *gameScreen = GameScreen::SCREEN_WORKSHOP;
-            }
-        }
+        int mousePos = GetMousePosition().x;
 
         EndTextureMode();
 
@@ -40,8 +33,26 @@ public:
         EndDrawing();
 
         if (inputHelper.isKeyClicked(KEY_A)) {
-            *gameScreen = GameScreen::SCREEN_WORKSHOP;
+            RoomSwitcher::switchRoom(GameScreen::SCREEN_WORKSHOP, false);
             SoundManager::Play(SoundManager::MOVE);
         }
+
+        if (RoomSwitcher::isActive()) {
+            RoomSwitcher::render(gameScreen);
+            return;
+        }
+
+
+
+        BeginDrawing();
+        if (mousePos < 20) {
+            DrawRectangle(0, 0, 20, screenHeight, SKYBLUE);
+
+            if (inputHelper.isButtonClicked(0)) {
+                RoomSwitcher::switchRoom(GameScreen::SCREEN_WORKSHOP, false);
+                SoundManager::Play(SoundManager::MOVE);
+            }
+        }
+        EndDrawing();
     }
 };

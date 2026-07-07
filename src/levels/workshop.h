@@ -8,6 +8,7 @@
 #include "../gameplay/castingGrid.h"
 #include "../gameplay/spells.h"
 #include "../tools/soundManager.h"
+#include "../tools/roomSwitcher.h"
 
 class Workshop {
     CastingGrid* castingGrid = nullptr;
@@ -19,22 +20,7 @@ public:
 
         DrawText("Workshop", 80, 90, 120, MAROON);
 
-        int pos = GetMousePosition().x;
-
-        if (pos >= screenWidth - 20) {
-            DrawRectangle(screenWidth - 20, 0, 20, screenHeight, SKYBLUE);
-
-            if (inputHelper.isButtonClicked(0)) {
-                *gameScreen = GameScreen::SCREEN_BOOK;
-            }
-        }
-        if (pos < 20) {
-            DrawRectangle(0, 0, 20, screenHeight, SKYBLUE);
-
-            if (inputHelper.isButtonClicked(0)) {
-                *gameScreen = GameScreen::SCREEN_SHOP;
-            }
-        }
+        int mousePos = GetMousePosition().x;
 
         EndTextureMode();
 
@@ -49,11 +35,33 @@ public:
         EndDrawing();
 
         if (inputHelper.isKeyClicked(KEY_A)) {
-            *gameScreen = GameScreen::SCREEN_SHOP;
+            RoomSwitcher::switchRoom(GameScreen::SCREEN_SHOP, false);
             SoundManager::Play(SoundManager::MOVE);
         } else if (inputHelper.isKeyClicked(KEY_D)) {
-            *gameScreen = GameScreen::SCREEN_BOOK;
+            RoomSwitcher::switchRoom(GameScreen::SCREEN_BOOK, true);
             SoundManager::Play(SoundManager::MOVE);
+        }
+
+        if (RoomSwitcher::isActive()) {
+            RoomSwitcher::render(gameScreen);
+            return;
+        }
+
+        if (mousePos >= screenWidth - 20) {
+            DrawRectangle(screenWidth - 20, 0, 20, screenHeight, SKYBLUE);
+
+            if (inputHelper.isButtonClicked(0)) {
+                RoomSwitcher::switchRoom(GameScreen::SCREEN_BOOK, true);
+                SoundManager::Play(SoundManager::MOVE);
+            }
+        }
+        if (mousePos < 20) {
+            DrawRectangle(0, 0, 20, screenHeight, SKYBLUE);
+
+            if (inputHelper.isButtonClicked(0)) {
+                RoomSwitcher::switchRoom(GameScreen::SCREEN_SHOP, false);
+                SoundManager::Play(SoundManager::MOVE);
+            }
         }
 
 
@@ -98,5 +106,7 @@ public:
         }
 
         EndDrawing();
+
+
     }
 };
