@@ -9,7 +9,8 @@ enum class GameScreen {
     SCREEN_BOOK,
     SCREEN_SHOP,
     SCREEN_WORKSHOP,
-    SCREEN_MARKET
+    SCREEN_MARKET,
+    SCREEN_MAINMENU,
 };
 
 #endif //RAYLIB_GAME_TEMPLATE_ENUMS_H
