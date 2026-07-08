@@ -33,6 +33,7 @@ add_executable(${PROJECT_NAME}
         src/tools/textureManager.h
         src/tools/TextureManager.cpp
         src/tools/roomSwitcher.cpp
+        src/gameplay/scrollInventory.h
 )
 add_subdirectory(src)
 

@@ -9,11 +9,13 @@
 #include "../gameplay/spells.h"
 #include "../tools/soundManager.h"
 #include "../tools/roomSwitcher.h"
+#include "../gameplay/scrollInventory.h"
 
 class Workshop {
     std::shared_ptr<CastingGrid> castingGrid = nullptr;
     std::vector<std::shared_ptr<CastingGrid>> castSpells{};
     std::vector<std::vector<Vector2>> castSpellsPoints{};
+    ScrollInventory scrollInventory{30};
 
 public:
     void render(RenderTexture2D target, int frameCounter, float screenWidth, float screenHeight, GameScreen* gameScreen, InputHelper inputHelper) {
@@ -21,7 +23,7 @@ public:
 
         DrawTexture(TextureManager::GetTexture(TextureManager::WORKSHOP_BG),0,0,WHITE);
 
-        DrawText("Workshop", 80, 90, 120, MAROON);
+        DrawText("Workshop", 160, 30, 80, MAROON);
 
         Vector2 mousePos = GetMousePosition();
 
@@ -33,6 +35,8 @@ public:
 
         DrawTexturePro(target.texture, (Rectangle){ 0, 0, (float)target.texture.width, -(float)target.texture.height },
             (Rectangle){ 0, 0, (float)target.texture.width, (float)target.texture.height }, (Vector2){ 0, 0 }, 0.0f, WHITE);
+
+        DrawRectangle(570, 300, 20, 270, BLUE);
 
         EndDrawing();
 
@@ -68,6 +72,12 @@ public:
 
 
 
+        // Scroll Inventory
+
+        scrollInventory.render(150,178,569,232);
+
+
+
 
         // Casting
 
@@ -98,8 +108,10 @@ public:
                     emscripten_log(0, spell->getName().c_str());
                 }
 
-                castSpells.push_back(castingGrid);
-                castSpellsPoints.push_back(castingGrid->getPoints());
+                if (castingGrid->getPointCount() > 1) {
+                    castSpells.push_back(castingGrid);
+                    castSpellsPoints.push_back(castingGrid->getPoints());
+                }
                 castingGrid = nullptr;
             }
         }
@@ -111,6 +123,18 @@ public:
         }
         for (auto& spell : castSpells) {
             spell->cleanRender();
+        }
+
+        if (mousePos.x > 570 && mousePos.x <= 590 &&
+            mousePos.y > 300 && mousePos.y <= 570) {
+            DrawRectangle(570, 300, 20, 270, SKYBLUE);
+
+            if (inputHelper.isButtonClicked(0) && !RoomSwitcher::isActive() && castingGrid == nullptr && castSpells.size() > 0) {
+                if (scrollInventory.addScroll(castSpells)) {
+                    castSpells.clear();
+                    SoundManager::Play(SoundManager::MOVE);
+                }
+            }
         }
 
         EndDrawing();
