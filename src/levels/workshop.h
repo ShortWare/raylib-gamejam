@@ -2,6 +2,8 @@
 // Created by Pd on 7/6/26.
 //
 #pragma once
+#include <utility>
+
 #include "raylib.h"
 #include "../enums.h"
 #include "../tools/inputHelper.h"
@@ -15,9 +17,10 @@ class Workshop {
     std::shared_ptr<CastingGrid> castingGrid = nullptr;
     std::vector<std::shared_ptr<CastingGrid>> castSpells{};
     std::vector<std::vector<Vector2>> castSpellsPoints{};
-    ScrollInventory scrollInventory{30};
+    ScrollInventory scrollInventory = ScrollInventory(30, this);
 
 public:
+
     void render(RenderTexture2D target, int frameCounter, float screenWidth, float screenHeight, GameScreen* gameScreen, InputHelper inputHelper) {
         BeginTextureMode(target);
 
@@ -74,7 +77,8 @@ public:
 
         // Scroll Inventory
 
-        scrollInventory.render(150,178,569,232);
+        scrollInventory.updateMouse(mousePos, 150,178,569,232, inputHelper);
+        scrollInventory.render();
 
 
 
@@ -94,7 +98,6 @@ public:
 
             if (castingGrid != nullptr && castingGrid->isFinished()) {
                 const Spells::Spell *spell = castingGrid->evaluate();
-                emscripten_log(0, spell->getName().c_str());
                 castingGrid = nullptr;
             }
         } else {
@@ -105,7 +108,6 @@ public:
 
                 if (castingGrid->getPointCount() >= 2 || !castingGrid->hasValidMoves()) {
                     const Spells::Spell *spell = castingGrid->evaluate();
-                    emscripten_log(0, spell->getName().c_str());
                 }
 
                 if (castingGrid->getPointCount() > 1) {
@@ -131,7 +133,9 @@ public:
 
             if (inputHelper.isButtonClicked(0) && !RoomSwitcher::isActive() && castingGrid == nullptr && castSpells.size() > 0) {
                 if (scrollInventory.addScroll(castSpells)) {
+                    scrollInventory.updateScrolls(150,178,569,232);
                     castSpells.clear();
+                    castSpellsPoints.clear();
                     SoundManager::Play(SoundManager::MOVE);
                 }
             }
@@ -140,5 +144,14 @@ public:
         EndDrawing();
 
 
+    }
+
+
+    bool pickupScroll(std::vector<std::shared_ptr<CastingGrid>> scroll) {
+        if (castingGrid != nullptr || !castSpells.empty()) return false;
+
+        castSpells = std::move(scroll);
+
+        return true;
     }
 };

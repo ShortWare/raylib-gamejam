@@ -65,7 +65,7 @@ static GameState gamestate{.game_screen = GameScreen::SCREEN_MAINMENU};
 
 Book book = Book();
 Shop shop = Shop();
-Workshop workshop = Workshop();
+Workshop *workshop = new Workshop();
 
 InputHelper inputHelper = InputHelper();
 
@@ -154,7 +154,7 @@ void UpdateDrawFrame(void) {
                 &gamestate.game_screen, inputHelper);
     break;
   case GameScreen::SCREEN_WORKSHOP:
-    workshop.render(target, frameCounter, screenWidth, screenHeight,
+    workshop->render(target, frameCounter, screenWidth, screenHeight,
                     &gamestate.game_screen, inputHelper);
     break;
   case GameScreen::SCREEN_MAINMENU:

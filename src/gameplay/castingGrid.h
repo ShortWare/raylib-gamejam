@@ -6,7 +6,6 @@
 #include <vector>
 #include <algorithm>
 #include "../enums.h"
-#include <emscripten/emscripten.h>
 #include "spells.h"
 #include "../tools/soundManager.h"
 
@@ -390,7 +389,6 @@ public:
                 case CastingMoves::MOVE_RIGHT: str += "R"; break;
             }
         }
-        emscripten_log(0, str.c_str());
 
         static Spells spells;
 
