@@ -52,6 +52,9 @@ public:
         }
 
         if (RoomSwitcher::isActive()) {
+            scrollInventory.updateScrolls(150,178,569,232);
+            scrollInventory.render();
+            for (auto spell : castSpells) spell->cleanRender();
             RoomSwitcher::render(gameScreen);
             return;
         }
